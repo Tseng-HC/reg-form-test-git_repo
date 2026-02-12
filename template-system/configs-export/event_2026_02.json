@@ -2,10 +2,10 @@
   "formMeta": {
     "title": "頭頸專研活動報名表",
     "version": "2.0",
-    "liffId": "2008806287-9a1hHluF",
-    "lineOaId": "@246trduk",
+    "liffId": "2008987714-bRfiJOZd",
+    "lineOaId": "@004twyur",
     "gasUrl": "https://script.google.com/macros/s/AKfycbxo69I1fpHZlHu11a6TvNKyspzgjZ5lmjBlrHq-PiZdn3bSKIQY6fQGM2hlFbwhYs4a/exec",
-    "basePath": "https://hnptc.github.io/RegistrationForm/template-system",
+    "basePath": "https://github.com/Tseng-HC/reg-form-test-git_repo/template-system",
     "configFileName": "event_2026_02"
   },
   "banner": {
