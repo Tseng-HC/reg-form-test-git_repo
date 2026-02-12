@@ -517,7 +517,8 @@ class FormRenderer {
                 if (!this.isGuest && this.userProfile.userId && liff.isLoggedIn()) {
                     const formTitle = this.config.formMeta ? this.config.formMeta.title : '活動';
                     const sessionVal = formData.session || '';
-                    const message = `報名 ${formTitle} ${sessionVal}`;
+                    // 使用換行符號 \n 來分行顯示
+                    const message = `報名\n${formTitle}\n${sessionVal}`;
 
                     // 使用 liff.isInClient() 判斷環境，與預約系統邏輯一致
                     if (liff.isInClient()) {
