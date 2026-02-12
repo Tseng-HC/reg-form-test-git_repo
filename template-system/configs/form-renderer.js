@@ -512,26 +512,30 @@ class FormRenderer {
         btnSubmit.innerText = '資料傳送中...';
 
         try {
-            // 嘗試發送 Line 訊息
-            // 嘗試發送 Line 訊息
-            if (!this.isGuest && this.userProfile.userId && liff.isLoggedIn()) {
-                const message = `報名 ${this.config.formMeta.title} ${formData.session}`;
+            // 嘗試發送 Line 訊息 (Safe Block)
+            try {
+                if (!this.isGuest && this.userProfile.userId && liff.isLoggedIn()) {
+                    const formTitle = this.config.formMeta ? this.config.formMeta.title : '活動';
+                    const sessionVal = formData.session || '';
+                    const message = `報名 ${formTitle} ${sessionVal}`;
 
-                // Debug: 檢查 API 是否可用
-                if (!liff.isApiAvailable('sendMessages')) {
-                    // 僅在開發測試時提示，或可選擇忽略
-                    // alert('注意：此環境 (如電腦版瀏覽器) 不支援發送 Line 訊息，報名資訊仍會送出。');
-                    console.warn('sendMessages API not available');
-                } else {
-                    try {
-                        await liff.sendMessages([{ type: 'text', text: message }]);
-                        // alert('Line 報名訊息已發送！'); 
-                    } catch (msgErr) {
-                        console.error('Failed to send Line message', msgErr);
-                        // 顯示詳細錯誤以便排查
-                        alert('Line 訊息發送失敗！\n原因：' + msgErr.message + '\n\n請確認：\n1. 您是否是在 LINE App 內開啟表單？\n2. LIFF 後台是否已開啟 chat_message.write 權限？');
+                    if (liff.isApiAvailable && liff.isApiAvailable('sendMessages')) {
+                        try {
+                            await liff.sendMessages([{ type: 'text', text: message }]);
+                            console.log('Line message sent');
+                            this.lineMessageSent = true;
+                        } catch (lineErr) {
+                            console.error('Line sendMessages failed:', lineErr);
+                            // 失敗時不阻擋，僅紀錄錯誤
+                            // alert('注意：Line 訊息發送失敗，但我們已收到您的報名資料。\n錯誤：' + lineErr.message);
+                        }
+                    } else {
+                        console.warn('Line sendMessages API not available');
                     }
                 }
+            } catch (e) {
+                console.error('Line logic error:', e);
+                // Swallow error to allow form submission
             }
 
             await this.submitToGAS(formData);
