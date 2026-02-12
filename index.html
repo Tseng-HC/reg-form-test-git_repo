@@ -1,0 +1,725 @@
+<!-- 頭頸專研活動報名系統 ver1.01 -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>頭頸專研活動報名表單</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        /* === 全域變數與基礎設定 === */
+        :root {
+            --primary-color: #06c755;
+            --bg-color: #f5f5f5;
+            --error-color: #e53935;
+        }
+
+        /* [重要補齊] 全域盒模型設定：確保 padding 不會撐大元素寬度 (替代 Tailwind 預設行為) */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        /* [重要補齊] 基礎字體與背景 (替代 Tailwind 預設字體) */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* === 容器與版面 === */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 主標題樣式 */
+        .main-title {
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        /* 次標題樣式 */
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 橫幅圖片區塊 */
+        .banner-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .banner-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* === 表單元素 === */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label.section-title {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.05em;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 8px;
+        }
+
+        label.section-title::after {
+            content: " *";
+            color: var(--error-color);
+        }
+
+        /* 輸入框 */
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* 選項按鈕 (Radio & Checkbox) */
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .option-label:hover {
+            background-color: #f9f9f9;
+        }
+
+        .option-label input {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        /* === 提醒設定區塊 === */
+        .remind-settings {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .remind-sub-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .remind-sub-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* Line 連結按鈕 (表單內) */
+        .connect-btn {
+            background-color: #00B900;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .line-status-text {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        /* === 底部按鈕區 === */
+        .action-area {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 5px rgba(6, 199, 85, 0.3);
+        }
+
+        button:disabled {
+            background-color: #ccc !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #status {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            min-height: 20px;
+        }
+
+        /* === 工具類 === */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" id="formContainer">
+
+        <!-- 版本號顯示區塊 -->
+        <div style="text-align: right; font-size: 12px; color: #aaa; margin-bottom: 0;">
+            頭頸專研活動報名系統 ver1.01
+        </div>
+
+        <h1 class="main-title">📝 頭頸專研活動報名表</h1>
+        <!-- 講座橫幅圖片 -->
+        <div class="banner-container">
+            <img src="https://i.duk.tw/xIs9FV.png" alt="講座橫幅" class="banner-img">
+        </div>
+
+        <!-- 活動內容介紹 (保持原樣) -->
+        <div class="form-group">
+            <div
+                style="margin-bottom: 10px; font-weight: bold; color: #333; font-size: 1.05em; border-left: 4px solid var(--primary-color); padding-left: 8px;">
+                活動內容
+            </div>
+            <div
+                style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #fff; line-height: 1.5;">
+                <div style="color: #666; font-size: 16px; margin-bottom: 10px;">
+                    十六年經驗專業物理治療師授課，現場分析肩頸僵硬來源、學習肩頸狀況自我檢測及舒緩方法。<br><br>
+                    入場當天還可參加抽獎，有機會獲得小禮物哦！ <br><br>
+                    免費入場。座位有限，額滿為止。
+                </div>
+            </div>
+        </div>
+
+        <!-- 地點 (保持原樣) -->
+        <div class="form-group">
+            <div
+                style="margin-bottom: 10px; font-weight: bold; color: #333; font-size: 1.05em; border-left: 4px solid var(--primary-color); padding-left: 8px;">
+                地點
+            </div>
+            <div
+                style="padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #fff; line-height: 1.5;">
+                <div style="font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 4px;">
+                    頭頸專研物理治療所
+                </div>
+                <div style="color: #666; font-size: 16px; margin-bottom: 10px;">
+                    台北市信義虎林街164巷34號1樓
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=頭頸專研物理治療所+台北市信義虎林街164巷34號1樓" target="_blank"
+                    style="display: inline-flex; align-items: center; color: var(--primary-color); text-decoration: none; font-weight: bold; font-size: 0.9em; border: 1px solid var(--primary-color); padding: 6px 12px; border-radius: 8px;">
+                    📍 開啟 Google 地圖
+                </a>
+            </div>
+        </div>
+
+
+        <form id="mainForm">
+
+            <!-- 1. 報名時間 -->
+            <div class="form-group">
+                <label class="section-title">報名場次</label>
+                <div class="radio-group">
+                    <label class="option-label"><input type="radio" name="session" value="1/14 (三) 10:00 - 11:30"
+                            required> 1/14 (三) 10:00 - 11:30</label>
+                    <label class="option-label"><input type="radio" name="session" value="1/19 (一) 10:00 - 11:30"> 1/19
+                        (一) 10:00 - 11:30</label>
+                    <label class="option-label"><input type="radio" name="session" value="1/25 (日) 10:00 - 11:30"> 1/25
+                        (日) 10:00 - 11:30</label>
+                    <label class="option-label"><input type="radio" name="session" value="1/30 (五) 10:00 - 11:30"> 1/30
+                        (五) 10:00 - 11:30</label>
+                </div>
+            </div>
+
+            <!-- 2. 姓名 -->
+            <div class="form-group">
+                <label class="section-title" for="realName">姓名</label>
+                <input type="text" id="realName" placeholder="請輸入您的真實姓名" required>
+            </div>
+
+            <!-- 3. 性別 -->
+            <div class="form-group">
+                <label class="section-title">性別</label>
+                <div class="radio-group" style="flex-direction: row; gap: 20px;">
+                    <label class="option-label" style="flex:1"><input type="radio" name="gender" value="男" required>
+                        男</label>
+                    <label class="option-label" style="flex:1"><input type="radio" name="gender" value="女"> 女</label>
+                </div>
+            </div>
+
+            <!-- 4. 年齡區段 -->
+            <div class="form-group">
+                <label class="section-title">年齡區段</label>
+                <div class="radio-group">
+                    <label class="option-label"><input type="radio" name="age" value="20歲以下" required> 20歲以下</label>
+                    <label class="option-label"><input type="radio" name="age" value="21-35歲"> 21-35歲</label>
+                    <label class="option-label"><input type="radio" name="age" value="36-50歲"> 36-50歲</label>
+                    <label class="option-label"><input type="radio" name="age" value="51-65歲"> 51-65歲</label>
+                    <label class="option-label"><input type="radio" name="age" value="65歲以上"> 65歲以上</label>
+                </div>
+            </div>
+
+            <!-- 5. 從哪得知 -->
+            <div class="form-group">
+                <label class="section-title">從哪得知 (可複選)</label>
+                <div class="checkbox-group">
+                    <label class="option-label"><input type="checkbox" name="source" value="網路"> 網路</label>
+                    <label class="option-label"><input type="checkbox" name="source" value="親友推薦"> 親友推薦</label>
+                    <label class="option-label"><input type="checkbox" name="source" value="實體傳單或海報"> 實體傳單或海報</label>
+                    <label class="option-label"><input type="checkbox" name="source" value="治療所現場得知"> 治療所現場得知</label>
+                </div>
+            </div>
+
+            <!-- 6. 是否接收提醒 (New Feature) -->
+            <div class="form-group">
+                <label class="section-title">是否接收活動提醒</label>
+                <div class="radio-group" style="flex-direction: row; gap: 20px;">
+                    <label class="option-label" style="flex:1">
+                        <input type="radio" name="needRemind" value="是" onclick="toggleRemindSection(true)" required> 是
+                    </label>
+                    <label class="option-label" style="flex:1">
+                        <input type="radio" name="needRemind" value="否" onclick="toggleRemindSection(false)"> 否
+                    </label>
+                </div>
+
+                <!-- 提醒子選項區塊 -->
+                <div id="remindDetails" class="remind-settings">
+                    <div style="font-size: 0.9em; color: #666; margin-bottom: 10px;">請選擇至少一種提醒方式：</div>
+
+                    <!-- Line 提醒 -->
+                    <div class="remind-sub-item">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="checkLine" onchange="toggleLineInput()">
+                            <span style="font-weight: bold; margin-left: 5px;">Line 通知</span>
+                        </label>
+                        <div id="lineConnectArea" style="margin-top: 10px; display: none;">
+                            <button type="button" id="btnLineLogin" class="connect-btn" onclick="handleLineLogin()">
+                                連結 Line 帳號
+                            </button>
+                            <span id="lineStatusText" class="line-status-text hidden"></span>
+                        </div>
+                    </div>
+
+                    <!-- Email 提醒 -->
+                    <div class="remind-sub-item">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="checkEmail" onchange="toggleEmailInput()">
+                            <span style="font-weight: bold; margin-left: 5px;">Email 通知</span>
+                        </label>
+                        <div id="emailInputArea" style="margin-top: 10px; display: none;">
+                            <input type="email" id="emailInput" placeholder="請填寫您的 Email">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部操作區 -->
+            <div class="action-area">
+                <button type="button" id="btnSubmit" class="submit-btn" onclick="handleSubmit()">
+                    送出報名
+                </button>
+            </div>
+
+        </form>
+
+        <div id="status"></div>
+    </div>
+
+    <!-- 成功畫面 (預設隱藏，報名完成才顯示)-->
+    <div id="successView" class="container hidden" style="text-align: center; padding: 40px 25px;">
+        <div style="font-size: 60px; margin-bottom: 10px;">✅</div>
+        <h2 style="color: var(--primary-color); margin-top: 0;">報名成功！</h2>
+        <p style="color: #666; line-height: 1.6; margin-bottom: 30px;">
+            我們已收到您的報名資訊。<br>
+            <span id="remindMsg" style="display:none; color: #ff9800;">屆時將會發送提醒通知給您。</span>
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+
+            <a href="https://line.me/R/ti/p/@246trduk" target="_blank" style="text-decoration: none;">
+                <button style="
+                width: 280px;
+                background-color: #06c755; 
+                color: white; 
+                border: none; 
+                padding: 14px 0; /* 改為 14px，與送出按鈕高度一致 */
+                border-radius: 8px; 
+                font-size: 16px; 
+                font-weight: bold; 
+                cursor: pointer; 
+                box-shadow: 0 4px 10px rgba(6, 199, 85, 0.3);
+                display: flex; align-items: center; justify-content: center;
+            ">
+                    <span style="font-size: 1.3em; margin-right: 8px;">💬</span>
+                    加入官方帳號好友
+                </button>
+            </a>
+
+            <button onclick="liff.closeWindow()" style="
+            width: 280px;
+            background-color: #f0f0f0; 
+            color: #666; 
+            border: 1px solid #ddd; 
+            padding: 14px 0; /* 改為 14px，與上方按鈕高度一致 */
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        ">
+                關閉視窗
+            </button>
+
+        </div>
+
+        <p style="font-size: 12px; color: #aaa; margin-top: 20px;">
+            加入後如有疑問可直接傳訊諮詢
+        </p>
+    </div>
+
+    <script>
+        // ==========================================
+        // [設定區]
+        // ==========================================
+        const CONFIG = {
+            LIFF_ID: "2008806287-9a1hHluF",
+            GAS_URL: "https://script.google.com/macros/s/AKfycbx74tnCe5wk-9WXWR-6Nrb8VE1R3iaXq33T6tpitgjk0PCYreNSoilkQ6QSDhghf4jlPQ/exec",
+            LINE_OA_ID: "@246trduk"
+        };
+        // ==========================================
+
+        let userProfile = { userId: "", displayName: "" };
+        let isGuest = true;
+
+        // 頁面載入時初始化
+        window.onload = function () {
+            if (CONFIG.LIFF_ID) {
+                initLiff();
+            }
+        };
+
+        // 1. 初始化 LIFF
+        async function initLiff() {
+            try {
+                await liff.init({ liffId: CONFIG.LIFF_ID });
+
+                // 檢查是否有暫存資料 (登入跳轉回來)
+                restoreFormData();
+
+                if (liff.isLoggedIn()) {
+                    isGuest = false;
+                    const profile = await liff.getProfile();
+                    userProfile.userId = profile.userId;
+                    userProfile.displayName = profile.displayName;
+
+                    // 更新 Line 連結狀態顯示
+                    updateLineStatusUI(true);
+                } else {
+                    isGuest = true;
+                    updateLineStatusUI(false);
+                }
+            } catch (err) {
+                console.error('LIFF Init Error:', err);
+                document.getElementById('status').innerText = "系統初始化失敗，請重新整理。";
+            }
+        }
+
+        // === UI 互動邏輯 ===
+
+        // 切換「是否接收提醒」區域顯示
+        function toggleRemindSection(show) {
+            const div = document.getElementById('remindDetails');
+            div.style.display = show ? 'block' : 'none';
+
+            // 如果切換成「否」，清空子項目的勾選與輸入，避免誤判
+            if (!show) {
+                document.getElementById('checkLine').checked = false;
+                document.getElementById('checkEmail').checked = false;
+                toggleLineInput();
+                toggleEmailInput();
+            }
+        }
+
+        // 切換 Line 連結按鈕顯示
+        function toggleLineInput() {
+            const isChecked = document.getElementById('checkLine').checked;
+            const area = document.getElementById('lineConnectArea');
+            area.style.display = isChecked ? 'block' : 'none';
+        }
+
+        // 切換 Email 輸入框顯示
+        function toggleEmailInput() {
+            const isChecked = document.getElementById('checkEmail').checked;
+            const area = document.getElementById('emailInputArea');
+            area.style.display = isChecked ? 'block' : 'none';
+
+            // 聚焦輸入框
+            if (isChecked) {
+                document.getElementById('emailInput').focus();
+            }
+        }
+
+        // 更新 Line 狀態 UI
+        function updateLineStatusUI(isLoggedIn) {
+            const btn = document.getElementById('btnLineLogin');
+            const txt = document.getElementById('lineStatusText');
+
+            if (isLoggedIn) {
+                btn.classList.add('hidden');
+                txt.classList.remove('hidden');
+                txt.innerText = `您好 ${userProfile.displayName}，Line 已連結`;
+            } else {
+                btn.classList.remove('hidden');
+                txt.classList.add('hidden');
+                btn.innerText = "連結 Line 帳號";
+            }
+        }
+
+        // 處理 Line 登入按鈕
+        function handleLineLogin() {
+            if (!liff.isLoggedIn()) {
+                saveFormData(); // 登入前暫存
+                liff.login({ redirectUri: window.location.href });
+            }
+        }
+
+        // === 表單驗證與送出 ===
+
+        async function handleSubmit() {
+            const form = document.getElementById('mainForm');
+            const statusDiv = document.getElementById('status');
+
+            // 1. 基本必填驗證 (HTML5)
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // 2. 來源複選驗證
+            const sourceCheckboxes = document.querySelectorAll('input[name="source"]:checked');
+            if (sourceCheckboxes.length === 0) {
+                alert("請至少選擇一項「從哪得知」");
+                return;
+            }
+
+            // 3. 提醒邏輯驗證
+            const needRemind = document.querySelector('input[name="needRemind"]:checked').value;
+            const checkLine = document.getElementById('checkLine').checked;
+            const checkEmail = document.getElementById('checkEmail').checked;
+            const emailVal = document.getElementById('emailInput').value.trim();
+
+            if (needRemind === "是") {
+                // 必須至少勾選一種
+                if (!checkLine && !checkEmail) {
+                    alert("接收提醒需至少勾選 Line 或 Email 其中一種方式喔！");
+                    return;
+                }
+
+                // 驗證 Line
+                if (checkLine && isGuest) {
+                    alert("Line 通知提醒，請點擊「連結 Line 帳號」按鈕並完成登入授權。");
+                    return;
+                }
+
+                // 驗證 Email
+                if (checkEmail && !emailVal) {
+                    alert("Email 通知，請確實填寫 Email 欄位。");
+                    document.getElementById('emailInput').focus();
+                    return;
+                }
+            }
+
+            // === 驗證通過，準備資料 ===
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "資料傳送中...";
+
+            // 收集資料
+            const session = document.querySelector('input[name="session"]:checked').value;
+
+            // 計算提醒日期 (如果是)
+            let remindDate = "";
+            if (needRemind === "是") {
+                const dateMatch = session.match(/(\d+)\/(\d+)/);
+                if (dateMatch) {
+                    const year = new Date().getFullYear();
+                    remindDate = `${year}-${dateMatch[1].padStart(2, '0')}-${dateMatch[2].padStart(2, '0')}`;
+                }
+            }
+
+            // [修改] 調整送出結構
+            const payload = {
+                uid: isGuest ? "guest" : userProfile.userId,
+                lineName: isGuest ? "" : userProfile.displayName,
+                realName: document.getElementById('realName').value,
+                session: session,
+                gender: document.querySelector('input[name="gender"]:checked').value,
+                age: document.querySelector('input[name="age"]:checked').value,
+                source: Array.from(sourceCheckboxes).map(cb => cb.value).join(', '),
+
+                // === 修改區段開始 ===
+                // 第9欄: Line提醒 (是/否)
+                lineRemind: (needRemind === "是" && checkLine) ? "是" : "否",
+                // 第10欄: Email
+                email: emailVal,
+                // 第11欄: Email提醒 (是/否)
+                emailRemind: (needRemind === "是" && checkEmail) ? "是" : "否",
+                // === 修改區段結束 ===
+
+                remindDate: remindDate
+            };
+
+            // === 送出至 GAS ===
+            try {
+                await fetch(CONFIG.GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload),
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                // 顯示成功畫面
+                localStorage.removeItem('liff_form_temp'); // 清除暫存
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('successView').classList.remove('hidden');
+
+                if (needRemind === "是") {
+                    document.getElementById('remindMsg').style.display = 'inline';
+                }
+
+            } catch (error) {
+                console.error('Submit Error:', error);
+                statusDiv.textContent = "❌ 傳送失敗，請檢查網路或稍後再試";
+                statusDiv.style.color = "red";
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "送出報名";
+            }
+        }
+
+        // === 暫存與還原 (處理 Line 登入跳轉) ===
+        function saveFormData() {
+            const formData = {
+                realName: document.getElementById('realName').value,
+                email: document.getElementById('emailInput').value,
+                checkLine: document.getElementById('checkLine').checked,
+                checkEmail: document.getElementById('checkEmail').checked,
+                needRemind: document.querySelector('input[name="needRemind"]:checked')?.value
+            };
+
+            // 單選與複選
+            ['session', 'gender', 'age'].forEach(name => {
+                const el = document.querySelector(`input[name="${name}"]:checked`);
+                if (el) formData[name] = el.value;
+            });
+
+            const sources = [];
+            document.querySelectorAll(`input[name="source"]:checked`).forEach(cb => sources.push(cb.value));
+            formData.source = sources;
+
+            localStorage.setItem('liff_form_temp', JSON.stringify(formData));
+        }
+
+        function restoreFormData() {
+            const saved = localStorage.getItem('liff_form_temp');
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+
+                if (data.realName) document.getElementById('realName').value = data.realName;
+                if (data.email) document.getElementById('emailInput').value = data.email;
+
+                // 還原單選
+                ['session', 'gender', 'age', 'needRemind'].forEach(name => {
+                    if (data[name]) {
+                        const el = document.querySelector(`input[name="${name}"][value="${data[name]}"]`);
+                        if (el) el.click(); // 使用 click 觸發 onclick 事件 (重要：觸發 UI 切換)
+                    }
+                });
+
+                // 還原複選
+                if (data.source) {
+                    data.source.forEach(val => {
+                        const el = document.querySelector(`input[name="source"][value="${val}"]`);
+                        if (el) el.checked = true;
+                    });
+                }
+
+                // 還原提醒勾選 (需先確認 needRemind 已展開)
+                if (data.needRemind === "是") {
+                    if (data.checkLine) {
+                        document.getElementById('checkLine').click(); // 觸發 UI 顯示
+                        document.getElementById('checkLine').checked = true;
+                    }
+                    if (data.checkEmail) {
+                        document.getElementById('checkEmail').click();
+                        document.getElementById('checkEmail').checked = true;
+                        // 若有值再填回
+                        if (data.email) document.getElementById('emailInput').value = data.email;
+                    }
+                }
+
+            } catch (e) {
+                console.error("Restore Error", e);
+            }
+        }
+    </script>
+</body>
+
+</html>

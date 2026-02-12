@@ -1,0 +1,135 @@
+{
+  "formMeta": {
+    "title": "活動報名表",
+    "version": "2.0",
+    "basePath": "",
+    "configFileName": "",
+    "liffId": "",
+    "lineOaId": "",
+    "gasUrl": ""
+  },
+  "banner": {
+    "enabled": false,
+    "imageUrl": "",
+    "altText": "活動橫幅"
+  },
+  "infoBlocks": [
+    {
+      "id": "activity-info",
+      "enabled": true,
+      "title": "活動內容",
+      "content": "請在此填寫活動說明..."
+    },
+    {
+      "id": "location",
+      "enabled": true,
+      "title": "地點",
+      "placeName": "",
+      "address": "",
+      "showMap": true,
+      "mapQuery": ""
+    }
+  ],
+  "formFields": [
+    {
+      "id": "session",
+      "type": "radio",
+      "enabled": true,
+      "required": true,
+      "title": "報名場次",
+      "options": [
+        "場次 1",
+        "場次 2",
+        "場次 3"
+      ]
+    },
+    {
+      "id": "realName",
+      "type": "text",
+      "enabled": true,
+      "required": true,
+      "title": "姓名",
+      "placeholder": "請輸入您的真實姓名"
+    },
+    {
+      "id": "gender",
+      "type": "radio",
+      "enabled": true,
+      "required": true,
+      "title": "性別",
+      "layout": "horizontal",
+      "options": [
+        "男",
+        "女"
+      ]
+    },
+    {
+      "id": "age",
+      "type": "radio",
+      "enabled": true,
+      "required": true,
+      "title": "年齡區段",
+      "options": [
+        "20歲以下",
+        "21-35歲",
+        "36-50歲",
+        "51-65歲",
+        "65歲以上"
+      ]
+    },
+    {
+      "id": "source",
+      "type": "checkbox",
+      "enabled": true,
+      "required": false,
+      "title": "從哪得知 (可複選)",
+      "options": [
+        "網路",
+        "親友推薦",
+        "實體傳單或海報",
+        "其他"
+      ]
+    },
+    {
+      "id": "contact",
+      "type": "contact-section",
+      "enabled": true,
+      "required": true,
+      "title": "聯絡方式",
+      "description": "請至少擇一填寫，若人數不足需通知我們才能聯繫到您",
+      "mobile": {
+        "enabled": true,
+        "placeholder": "請輸入手機號碼 (範例：0912345678)"
+      },
+      "line": {
+        "enabled": true,
+        "buttonText": "連結 Line 帳號",
+        "sendMessage": {
+          "enabled": true,
+          "buttonText": "發送報名訊息",
+          "messageTemplate": "報名 {session}",
+          "successHint": "✅ 已透過 Line 確認報名"
+        }
+      },
+      "email": {
+        "enabled": true,
+        "placeholder": "請輸入電子信箱"
+      }
+    },
+    {
+      "id": "remind",
+      "type": "remind-section",
+      "enabled": true,
+      "required": true,
+      "title": "是否接收活動提醒",
+      "methods": {
+        "line": {
+          "enabled": true
+        },
+        "email": {
+          "enabled": true
+        }
+      }
+    }
+  ]
+}

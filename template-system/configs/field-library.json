@@ -1,0 +1,104 @@
+{
+    "library": {
+        "basicInfo": {
+            "name": {
+                "id": "realName",
+                "type": "text",
+                "title": "姓名",
+                "placeholder": "請輸入您的真實姓名",
+                "required": true,
+                "enabled": true
+            },
+            "gender": {
+                "id": "gender",
+                "type": "radio",
+                "title": "性別",
+                "layout": "horizontal",
+                "options": [
+                    "男",
+                    "女"
+                ],
+                "required": true,
+                "enabled": true
+            },
+            "phone": {
+                "id": "phone",
+                "type": "text",
+                "title": "聯絡電話",
+                "placeholder": "請輸入手機號碼",
+                "required": true,
+                "enabled": true
+            },
+            "email": {
+                "id": "email",
+                "type": "email",
+                "title": "Email",
+                "placeholder": "example@email.com",
+                "required": false,
+                "enabled": true
+            }
+        },
+        "demographics": {
+            "ageGroups": {
+                "id": "age",
+                "type": "radio",
+                "title": "年齡區段",
+                "options": [
+                    "20歲以下",
+                    "21-35歲",
+                    "36-50歲",
+                    "51-65歲",
+                    "65歲以上"
+                ],
+                "required": true,
+                "enabled": true
+            },
+            "occupation": {
+                "id": "occupation",
+                "type": "text",
+                "title": "職業",
+                "placeholder": "請輸入您的職業",
+                "required": false,
+                "enabled": true
+            }
+        },
+        "marketing": {
+            "source": {
+                "id": "source",
+                "type": "checkbox",
+                "title": "從哪得知 (可複選)",
+                "options": [
+                    "網路",
+                    "親友推薦",
+                    "實體傳單或海報",
+                    "治療所現場得知"
+                ],
+                "required": false,
+                "enabled": true
+            },
+            "interests": {
+                "id": "interests",
+                "type": "checkbox",
+                "title": "感興趣的主題 (可複選)",
+                "options": [
+                    "健康講座",
+                    "運動課程",
+                    "營養諮詢",
+                    "心理健康"
+                ],
+                "required": false,
+                "enabled": true
+            }
+        },
+        "feedback": {
+            "comments": {
+                "id": "comments",
+                "type": "textarea",
+                "title": "其他意見或建議",
+                "placeholder": "請輸入您的意見...",
+                "required": false,
+                "enabled": true
+            }
+        }
+    }
+}

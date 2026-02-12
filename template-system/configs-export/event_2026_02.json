@@ -1,0 +1,110 @@
+{
+  "formMeta": {
+    "title": "頭頸專研活動報名表",
+    "version": "2.0",
+    "liffId": "2008806287-9a1hHluF",
+    "lineOaId": "@246trduk",
+    "gasUrl": "https://script.google.com/macros/s/AKfycbxo69I1fpHZlHu11a6TvNKyspzgjZ5lmjBlrHq-PiZdn3bSKIQY6fQGM2hlFbwhYs4a/exec",
+    "basePath": "https://hnptc.github.io/RegistrationForm/template-system",
+    "configFileName": "event_2026_02"
+  },
+  "banner": {
+    "enabled": true,
+    "imageUrl": "https://duk.tw/xi1DIY.jpg",
+    "altText": "講座橫幅"
+  },
+  "infoBlocks": [
+    {
+      "id": "activity-info",
+      "enabled": true,
+      "title": "活動內容",
+      "content": "十六年經驗專業物理治療師授課,現場分析肩頸僵硬來源、學習肩頸狀況自我檢測及舒緩方法。\n\n入場當天還可參加抽獎,有機會獲得小禮物哦！\n\n免費入場。座位有限,額滿為止。"
+    },
+    {
+      "id": "location",
+      "enabled": true,
+      "title": "地點",
+      "placeName": "頭頸專研物理治療所",
+      "address": "台北市信義虎林街164巷34號1樓",
+      "showMap": true,
+      "mapQuery": "頭頸專研物理治療所+台北市信義虎林街164巷34號1樓"
+    }
+  ],
+  "formFields": [
+    {
+      "id": "session",
+      "type": "radio",
+      "enabled": true,
+      "required": true,
+      "title": "報名場次",
+      "options": [
+        "2/08 (日) 14:30 - 16:00",
+        "2/11 (三) 19:00 - 20:30",
+        "2/24 (二) 14:30 - 16:00",
+        "3/02 (一) 19:00 - 20:30"
+      ]
+    },
+    {
+      "id": "realName",
+      "type": "text",
+      "enabled": true,
+      "required": true,
+      "title": "姓名",
+      "placeholder": "請輸入您的真實姓名"
+    },
+    {
+      "id": "gender",
+      "type": "radio",
+      "enabled": true,
+      "required": true,
+      "title": "性別",
+      "layout": "horizontal",
+      "options": [
+        "男",
+        "女"
+      ]
+    },
+    {
+      "id": "age",
+      "type": "radio",
+      "enabled": true,
+      "required": true,
+      "title": "年齡區段",
+      "options": [
+        "20歲以下",
+        "21-35歲",
+        "36-50歲",
+        "51-65歲",
+        "65歲以上"
+      ]
+    },
+    {
+      "id": "source",
+      "type": "checkbox",
+      "enabled": true,
+      "required": false,
+      "title": "從哪得知 (可複選)",
+      "options": [
+        "網路",
+        "親友推薦",
+        "實體傳單或海報",
+        "治療所現場得知"
+      ]
+    },
+    {
+      "id": "remind",
+      "type": "remind-section",
+      "enabled": true,
+      "required": true,
+      "title": "是否接收活動提醒",
+      "methods": {
+        "line": {
+          "enabled": true
+        },
+        "email": {
+          "enabled": true
+        }
+      }
+    }
+  ]
+}

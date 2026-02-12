@@ -1,0 +1,109 @@
+{
+    "formMeta": {
+        "title": "",
+        "version": "1.0",
+        "basePath": "",
+        "configFileName": "",
+        "liffId": "",
+        "lineOaId": "",
+        "gasUrl": ""
+    },
+    "banner": {
+        "enabled": false,
+        "imageUrl": "",
+        "altText": ""
+    },
+    "infoBlocks": [
+        {
+            "id": "activity-info",
+            "enabled": true,
+            "title": "活動內容",
+            "content": ""
+        },
+        {
+            "id": "location",
+            "enabled": true,
+            "title": "地點",
+            "placeName": "",
+            "address": "",
+            "showMap": true,
+            "mapQuery": ""
+        }
+    ],
+    "formFields": [
+        {
+            "id": "session",
+            "type": "radio",
+            "enabled": true,
+            "required": true,
+            "title": "報名場次",
+            "options": [
+                "場次 1",
+                "場次 2",
+                "場次 3"
+            ]
+        },
+        {
+            "id": "realName",
+            "type": "text",
+            "enabled": true,
+            "required": true,
+            "title": "姓名",
+            "placeholder": "請輸入您的真實姓名"
+        },
+        {
+            "id": "gender",
+            "type": "radio",
+            "enabled": true,
+            "required": true,
+            "title": "性別",
+            "layout": "horizontal",
+            "options": [
+                "男",
+                "女"
+            ]
+        },
+        {
+            "id": "age",
+            "type": "radio",
+            "enabled": true,
+            "required": true,
+            "title": "年齡區段",
+            "options": [
+                "20歲以下",
+                "21-35歲",
+                "36-50歲",
+                "51-65歲",
+                "65歲以上"
+            ]
+        },
+        {
+            "id": "source",
+            "type": "checkbox",
+            "enabled": true,
+            "required": false,
+            "title": "從哪得知 (可複選)",
+            "options": [
+                "網路",
+                "親友推薦",
+                "實體傳單或海報",
+                "其他"
+            ]
+        },
+        {
+            "id": "remind",
+            "type": "remind-section",
+            "enabled": true,
+            "required": true,
+            "title": "是否接收活動提醒",
+            "methods": {
+                "line": {
+                    "enabled": true
+                },
+                "email": {
+                    "enabled": true
+                }
+            }
+        }
+    ]
+}
