@@ -121,7 +121,7 @@
       "id": "remind",
       "type": "remind-section",
       "enabled": true,
-      "required": true,
+      "required": false,
       "title": "是否接收活動提醒",
       "methods": {
         "line": {

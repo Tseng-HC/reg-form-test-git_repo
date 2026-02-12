@@ -401,12 +401,9 @@ class FormRenderer {
                     ${field.methods.email.enabled ? `
                     <div class="remind-sub-item" style="border: none;">
                         <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="checkEmail" onchange="window.toggleEmailInput()">
+                            <input type="checkbox" id="checkEmail">
                             <span style="font-weight: bold; margin-left: 5px;">Email 提醒</span>
                         </label>
-                        <div id="emailInputArea" style="margin-top: 10px; display: none; margin-left: 25px;">
-                            <input type="email" id="emailInput" placeholder="請填寫您的 Email" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
                     </div>
                     ` : ''}
                 </div>
@@ -652,10 +649,8 @@ class FormRenderer {
                 case 'remind-section':
                     const checkLine = document.getElementById('checkLine')?.checked;
                     const checkEmail = document.getElementById('checkEmail')?.checked;
-                    const emailVal = document.getElementById('emailInput')?.value.trim();
 
                     data.lineRemind = checkLine ? '是' : '否';
-                    data.email = emailVal || '';
                     data.emailRemind = checkEmail ? '是' : '否';
                     data.needRemind = (checkLine || checkEmail) ? '是' : '否';
 
@@ -694,9 +689,9 @@ class FormRenderer {
             return false;
         }
 
-        if (checkEmail && !data.email) {
-            alert('Email 通知,請確實填寫 Email 欄位。');
-            document.getElementById('emailInput')?.focus();
+        if (checkEmail && !data.contact_email) {
+            alert('勾選 Email 提醒需填寫電子信箱，請至「聯絡方式」區塊填寫 Email。');
+            document.getElementById('contact_email')?.focus();
             return false;
         }
 
