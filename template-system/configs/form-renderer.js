@@ -519,18 +519,20 @@ class FormRenderer {
                     const sessionVal = formData.session || '';
                     const message = `報名 ${formTitle} ${sessionVal}`;
 
-                    if (liff.isApiAvailable && liff.isApiAvailable('sendMessages')) {
+                    // 使用 liff.isInClient() 判斷環境，與預約系統邏輯一致
+                    if (liff.isInClient()) {
                         try {
                             await liff.sendMessages([{ type: 'text', text: message }]);
                             console.log('Line message sent');
                             this.lineMessageSent = true;
                         } catch (lineErr) {
                             console.error('Line sendMessages failed:', lineErr);
-                            // 失敗時不阻擋，僅紀錄錯誤
-                            // alert('注意：Line 訊息發送失敗，但我們已收到您的報名資料。\n錯誤：' + lineErr.message);
+                            // 在 Client 內發送失敗才提示
+                            alert('注意：無法發送報名紀錄到您的 Line (可能權限不足)。\n但我們已收到您的報名資料。');
                         }
                     } else {
-                        console.warn('Line sendMessages API not available');
+                        // 非 Line Client 環境 (如外部瀏覽器)，直接跳過不發送，不報錯
+                        console.log('Not in Line Client, skip sending message.');
                     }
                 }
             } catch (e) {
