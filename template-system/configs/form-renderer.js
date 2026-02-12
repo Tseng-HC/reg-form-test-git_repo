@@ -289,7 +289,7 @@ class FormRenderer {
                     
                     <!-- 手機 -->
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">📱 ${field.mobile.title || '手機'}</label>
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">${field.mobile.title || '手機'}</label>
                         <input type="tel" 
                                id="contact_mobile" 
                                placeholder="${field.mobile.placeholder || ''}" 
@@ -298,56 +298,32 @@ class FormRenderer {
 
                     <!-- Line -->
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">💬 ${field.line.title || 'Line'}</label>
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">${field.line.title || 'Line'}</label>
                         <div style="background: white; padding: 10px; border: 1px solid #eee; border-radius: 4px;">
+                            <div style="margin-bottom: 10px; font-size: 0.9em; color: #666;">
+                                1. 請先 <a href="${lineAddFriendUrl}" target="_blank" style="color: #06c755; font-weight: bold; text-decoration: none;">加入官方帳號好友</a><br>
+                                2. 點擊下方按鈕連結帳號
+                            </div>
+
+                            <button type="button" 
+                                    id="contact_btnLineLogin" 
+                                    class="connect-btn" 
+                                    style="background-color: #06c755; width: 100%;"
+                                    onclick="window.handleLineLogin()">
+                                ${field.line.buttonText || '連結 Line 帳號'}
+                            </button>
                             
-                            ${field.line.sendMessage && field.line.sendMessage.enabled ? `
-                                <!-- 訊息驗證模式 -->
-                                <div style="margin-bottom: 10px; font-size: 0.9em; color: #666;">
-                                    1. 請先 <a href="${lineAddFriendUrl}" target="_blank" style="color: #06c755; font-weight: bold; text-decoration: none;">加入官方帳號好友</a><br>
-                                    2. 點擊下方按鈕發送報名訊息
-                                </div>
-
-                                <button type="button" 
-                                        id="contact_btnSendMessage" 
-                                        class="connect-btn" 
-                                        style="background-color: #06c755; width: 100%;"
-                                        onclick="window.handleSendLineMessage()">
-                                    ${field.line.sendMessage.buttonText || '發送報名訊息'}
-                                </button>
-                                
-                                <div id="contact_lineMessageStatus" 
-                                     class="line-status-text hidden" 
-                                     style="color: #06c755; font-weight: bold; text-align: center; padding: 8px;">
-                                    <!-- 動態填入狀態 -->
-                                </div>
-                            ` : `
-                                <!-- 傳統登入模式 -->
-                                <div style="margin-bottom: 10px; font-size: 0.9em; color: #666;">
-                                    1. 請先 <a href="${lineAddFriendUrl}" target="_blank" style="color: #06c755; font-weight: bold; text-decoration: none;">加入官方帳號好友</a><br>
-                                    2. 點擊下方按鈕連結帳號
-                                </div>
-
-                                <button type="button" 
-                                        id="contact_btnLineLogin" 
-                                        class="connect-btn" 
-                                        style="background-color: #06c755; width: 100%;"
-                                        onclick="window.handleLineLogin()">
-                                    ${field.line.buttonText || '連結 Line 帳號'}
-                                </button>
-                                
-                                <div id="contact_lineStatusText" 
-                                     class="line-status-text hidden" 
-                                     style="color: #06c755; font-weight: bold; text-align: center; padding: 8px;">
-                                    <!-- 動態填入狀態 -->
-                                </div>
-                            `}
+                            <div id="contact_lineStatusText" 
+                                    class="line-status-text hidden" 
+                                    style="color: #06c755; font-weight: bold; text-align: center; padding: 8px;">
+                                <!-- 動態填入狀態 -->
+                            </div>
                         </div>
                     </div>
 
                     <!-- Email -->
                     <div>
-                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">📧 ${field.email.title || '電子郵件'}</label>
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">${field.email.title || 'Email'}</label>
                         <input type="email" 
                                id="contact_email" 
                                placeholder="${field.email.placeholder || ''}"
@@ -433,7 +409,6 @@ class FormRenderer {
         window.toggleLineInput = this.toggleLineInput.bind(this);
         window.toggleEmailInput = this.toggleEmailInput.bind(this);
         window.handleLineLogin = this.handleLineLogin.bind(this);
-        window.handleSendLineMessage = this.handleSendLineMessage.bind(this);
         window.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -509,63 +484,7 @@ class FormRenderer {
         }
     }
 
-    /**
-     * 處理發送 Line 訊息
-     */
-    async handleSendLineMessage() {
-        // 確認已登入
-        if (!liff.isLoggedIn()) {
-            alert('請先連結 Line 帳號');
-            this.saveFormData();
-            liff.login({ redirectUri: window.location.href });
-            return;
-        }
-
-        // 取得場次資訊
-        const sessionField = this.config.formFields.find(f => f.id === 'session');
-        const sessionValue = document.querySelector('input[name="session"]:checked')?.value;
-
-        if (!sessionValue) {
-            alert('請先選擇報名場次');
-            return;
-        }
-
-        // 取得訊息模板
-        const contactField = this.config.formFields.find(f => f.type === 'contact-section');
-        const messageTemplate = contactField?.line?.sendMessage?.messageTemplate || '報名 {session}';
-        const message = messageTemplate.replace('{session}', sessionValue);
-
-        try {
-            // 發送訊息
-            if (liff.isApiAvailable('sendMessages')) {
-                await liff.sendMessages([
-                    {
-                        type: 'text',
-                        text: message
-                    }
-                ]);
-
-                // 更新 UI 狀態
-                const btn = document.getElementById('contact_btnSendMessage');
-                const status = document.getElementById('contact_lineMessageStatus');
-
-                if (btn && status) {
-                    btn.classList.add('hidden');
-                    status.classList.remove('hidden');
-                    status.innerText = contactField?.line?.sendMessage?.successHint || '✅ 已透過 Line 確認報名';
-                }
-
-                // 標記已發送訊息
-                this.lineMessageSent = true;
-
-            } else {
-                throw new Error('sendMessages API 不可用');
-            }
-        } catch (error) {
-            console.error('Send Message Error:', error);
-            alert('發送訊息失敗，請確認已加入官方帳號好友，或稍後再試。');
-        }
-    }
+    // handleSendLineMessage removed
 
     /**
      * 處理表單提交
@@ -593,6 +512,19 @@ class FormRenderer {
         btnSubmit.innerText = '資料傳送中...';
 
         try {
+            // 嘗試發送 Line 訊息
+            if (!this.isGuest && this.userProfile.userId && liff.isLoggedIn()) {
+                const message = `報名 ${this.config.formMeta.title} ${formData.session}`;
+                try {
+                    if (liff.isApiAvailable('sendMessages')) {
+                        await liff.sendMessages([{ type: 'text', text: message }]);
+                        console.log('Line message sent');
+                    }
+                } catch (msgErr) {
+                    console.error('Failed to send Line message', msgErr);
+                }
+            }
+
             await this.submitToGAS(formData);
             this.showSuccessView(formData);
         } catch (error) {
@@ -702,9 +634,7 @@ class FormRenderer {
             const hasEmail = data.contact_email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contact_email);
 
             // 如果啟用訊息驗證模式，檢查是否已發送訊息
-            const hasLine = contactSection.line?.sendMessage?.enabled
-                ? data.contact_line_message_sent
-                : data.contact_line_linked;
+            const hasLine = data.contact_line_linked;
 
             // 驗證格式 (如果有填寫的話)
             if (data.contact_mobile && !hasMobile) {
@@ -720,10 +650,7 @@ class FormRenderer {
             }
 
             if (!hasMobile && !hasEmail && !hasLine) {
-                const lineHint = contactSection.line?.sendMessage?.enabled
-                    ? '發送 Line 報名訊息'
-                    : 'Line 連結';
-                alert(`請在「聯絡方式」中，至少完成一項 (手機、${lineHint}、或 Email)，以便我們能聯繫您。`);
+                alert(`請在「聯絡方式」中，至少完成一項 (手機、Line連結、或 Email)，以便我們能聯繫您。`);
                 return false;
             }
         }
