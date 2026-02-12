@@ -382,46 +382,30 @@ class FormRenderer {
         return `
             <div class="form-group">
                 <label class="section-title">${field.title}${field.required ? '<span style="color: #e53935;"> *</span>' : ''}</label>
-                <div class="radio-group" style="flex-direction: row; gap: 20px;">
-                    <label class="option-label" style="flex:1">
-                        <input type="radio" name="needRemind" value="是" onclick="window.toggleRemindSection(true)" ${field.required ? 'required' : ''}>
-                        是
-                    </label>
-                    <label class="option-label" style="flex:1">
-                        <input type="radio" name="needRemind" value="否" onclick="window.toggleRemindSection(false)">
-                        否
-                    </label>
-                </div>
-
-                <div id="remindDetails" class="remind-settings">
-                    <div style="font-size: 0.9em; color: #666; margin-bottom: 10px;">請選擇至少一種提醒方式：</div>
+                
+                <div id="remindDetails" class="remind-settings" style="display: block; border: none; padding: 0; background: none; margin-top: 10px;">
+                    <div style="font-size: 0.9em; color: #666; margin-bottom: 10px;">${field.description || '請選擇提醒方式 (預設不提醒)：'}</div>
                     
                     ${field.methods.line.enabled ? `
-                    <div class="remind-sub-item">
+                    <div class="remind-sub-item" style="border-bottom: 1px solid #eee; margin-bottom: 15px; padding-bottom: 15px;">
                         <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="checkLine" onchange="window.toggleLineInput()">
-                            <span style="font-weight: bold; margin-left: 5px;">Line 通知</span>
+                            <input type="checkbox" id="checkLine">
+                            <span style="font-weight: bold; margin-left: 5px;">Line 提醒</span>
                         </label>
                         <div style="font-size: 0.85em; color: #ff9800; margin-top: 5px; margin-left: 25px;">
-                            ⚠️ 需加入官方帳號好友才能正常接收提醒
-                        </div>
-                        <div id="lineConnectArea" style="margin-top: 10px; display: none;">
-                            <button type="button" id="btnLineLogin" class="connect-btn" onclick="window.handleLineLogin()">
-                                連結 Line 帳號
-                            </button>
-                            <span id="lineStatusText" class="line-status-text hidden"></span>
+                            ⚠️ 需先在「聯絡方式」完成 Line 連結或訊息驗證
                         </div>
                     </div>
                     ` : ''}
 
                     ${field.methods.email.enabled ? `
-                    <div class="remind-sub-item">
+                    <div class="remind-sub-item" style="border: none;">
                         <label style="display: flex; align-items: center; cursor: pointer;">
                             <input type="checkbox" id="checkEmail" onchange="window.toggleEmailInput()">
-                            <span style="font-weight: bold; margin-left: 5px;">Email 通知</span>
+                            <span style="font-weight: bold; margin-left: 5px;">Email 提醒</span>
                         </label>
-                        <div id="emailInputArea" style="margin-top: 10px; display: none;">
-                            <input type="email" id="emailInput" placeholder="請填寫您的 Email">
+                        <div id="emailInputArea" style="margin-top: 10px; display: none; margin-left: 25px;">
+                            <input type="email" id="emailInput" placeholder="請填寫您的 Email" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
                     </div>
                     ` : ''}
@@ -460,19 +444,7 @@ class FormRenderer {
      * 切換提醒區域顯示
      */
     toggleRemindSection(show) {
-        const div = document.getElementById('remindDetails');
-        if (div) {
-            div.style.display = show ? 'block' : 'none';
-
-            if (!show) {
-                const checkLine = document.getElementById('checkLine');
-                const checkEmail = document.getElementById('checkEmail');
-                if (checkLine) checkLine.checked = false;
-                if (checkEmail) checkEmail.checked = false;
-                this.toggleLineInput();
-                this.toggleEmailInput();
-            }
-        }
+        // Deprecated: Remind section is always visible
     }
 
     /**
@@ -678,18 +650,17 @@ class FormRenderer {
                     break;
 
                 case 'remind-section':
-                    const needRemind = document.querySelector('input[name="needRemind"]:checked')?.value;
                     const checkLine = document.getElementById('checkLine')?.checked;
                     const checkEmail = document.getElementById('checkEmail')?.checked;
                     const emailVal = document.getElementById('emailInput')?.value.trim();
 
-                    data.needRemind = needRemind;
-                    data.lineRemind = (needRemind === '是' && checkLine) ? '是' : '否';
+                    data.lineRemind = checkLine ? '是' : '否';
                     data.email = emailVal || '';
-                    data.emailRemind = (needRemind === '是' && checkEmail) ? '是' : '否';
+                    data.emailRemind = checkEmail ? '是' : '否';
+                    data.needRemind = (checkLine || checkEmail) ? '是' : '否';
 
                     // 計算提醒日期
-                    if (needRemind === '是' && data.session) {
+                    if ((checkLine || checkEmail) && data.session) {
                         const dateMatch = data.session.match(/(\d+)\/(\d+)/);
                         if (dateMatch) {
                             const year = new Date().getFullYear();
@@ -715,25 +686,18 @@ class FormRenderer {
         }
 
         // 驗證提醒設定
-        if (data.needRemind === '是') {
-            const checkLine = document.getElementById('checkLine')?.checked;
-            const checkEmail = document.getElementById('checkEmail')?.checked;
+        const checkLine = document.getElementById('checkLine')?.checked;
+        const checkEmail = document.getElementById('checkEmail')?.checked;
 
-            if (!checkLine && !checkEmail) {
-                alert('接收提醒需至少勾選 Line 或 Email 其中一種方式喔！');
-                return false;
-            }
+        if (checkLine && this.isGuest) {
+            alert('勾選 Line 通知提醒需先連結帳號，請至「聯絡方式」區塊完成 Line 連結或發送訊息。');
+            return false;
+        }
 
-            if (checkLine && this.isGuest) {
-                alert('Line 通知提醒,請點擊「連結 Line 帳號」按鈕並完成登入授權。');
-                return false;
-            }
-
-            if (checkEmail && !data.email) {
-                alert('Email 通知,請確實填寫 Email 欄位。');
-                document.getElementById('emailInput')?.focus();
-                return false;
-            }
+        if (checkEmail && !data.email) {
+            alert('Email 通知,請確實填寫 Email 欄位。');
+            document.getElementById('emailInput')?.focus();
+            return false;
         }
 
         // 驗證聯絡方式 (至少擇一)
@@ -888,6 +852,7 @@ class FormRenderer {
             // 延遲還原,等待 DOM 渲染完成
             setTimeout(() => {
                 Object.keys(data).forEach(key => {
+                    // Try to finding input by key ID
                     const input = document.getElementById(key);
                     if (input) {
                         input.value = data[key];
@@ -897,6 +862,23 @@ class FormRenderer {
                     const radio = document.querySelector(`input[name="${key}"][value="${data[key]}"]`);
                     if (radio) radio.click();
                 });
+
+                // 特別處理提醒複選框的還原
+                if (data.lineRemind === '是') {
+                    const checkLine = document.getElementById('checkLine');
+                    if (checkLine) {
+                        checkLine.checked = true;
+                        this.toggleLineInput();
+                    }
+                }
+                if (data.emailRemind === '是') {
+                    const checkEmail = document.getElementById('checkEmail');
+                    if (checkEmail) {
+                        checkEmail.checked = true;
+                        this.toggleEmailInput();
+                    }
+                }
+
             }, 100);
         } catch (e) {
             console.error('Restore Error', e);
