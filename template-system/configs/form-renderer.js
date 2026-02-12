@@ -513,15 +513,24 @@ class FormRenderer {
 
         try {
             // 嘗試發送 Line 訊息
+            // 嘗試發送 Line 訊息
             if (!this.isGuest && this.userProfile.userId && liff.isLoggedIn()) {
                 const message = `報名 ${this.config.formMeta.title} ${formData.session}`;
-                try {
-                    if (liff.isApiAvailable('sendMessages')) {
+
+                // Debug: 檢查 API 是否可用
+                if (!liff.isApiAvailable('sendMessages')) {
+                    // 僅在開發測試時提示，或可選擇忽略
+                    // alert('注意：此環境 (如電腦版瀏覽器) 不支援發送 Line 訊息，報名資訊仍會送出。');
+                    console.warn('sendMessages API not available');
+                } else {
+                    try {
                         await liff.sendMessages([{ type: 'text', text: message }]);
-                        console.log('Line message sent');
+                        // alert('Line 報名訊息已發送！'); 
+                    } catch (msgErr) {
+                        console.error('Failed to send Line message', msgErr);
+                        // 顯示詳細錯誤以便排查
+                        alert('Line 訊息發送失敗！\n原因：' + msgErr.message + '\n\n請確認：\n1. 您是否是在 LINE App 內開啟表單？\n2. LIFF 後台是否已開啟 chat_message.write 權限？');
                     }
-                } catch (msgErr) {
-                    console.error('Failed to send Line message', msgErr);
                 }
             }
 
